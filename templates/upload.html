@@ -6,7 +6,6 @@
     <title>File Processor</title>
     {% load static %}
     <style>
-        /* General styles */
         body {
             font-family: 'Arial', sans-serif;
             background: url("{% static 'images/back.png' %}") no-repeat center center fixed;
@@ -31,7 +30,6 @@
             position: relative;
         }
 
-        /* Animated yellow border */
         .container {
             border: 5px solid transparent;
             animation: blinkBorder 1.5s infinite;
@@ -47,12 +45,11 @@
         }
 
         h1 {
-            color: white; /* Text color updated to white */
+            color: white;
             font-size: 24px;
             margin-bottom: 20px;
         }
 
-        /* File input block */
         .file-input-container {
             display: flex;
             align-items: center;
@@ -65,7 +62,7 @@
 
         .file-input-container label {
             background: #f8b229;
-            color: #ea4630; /* Button text color */
+            color: #ea4630;
             padding: 10px 20px;
             cursor: pointer;
             font-size: 16px;
@@ -73,7 +70,7 @@
         }
 
         .file-input-container label:hover {
-            background: #e5a717; /* Slightly darker background on hover */
+            background: #e5a717;
         }
 
         .file-input-container span {
@@ -85,12 +82,12 @@
         }
 
         .file-input-container input[type="file"] {
-            display: none; /* Hide the default file input */
+            display: none;
         }
 
         button {
-            background: #f8b229; /* Button background color */
-            color: #ea4630; /* Button text color */
+            background: #f8b229;
+            color: #ea4630;
             border: none;
             padding: 10px 20px;
             border-radius: 5px;
@@ -103,7 +100,6 @@
             background: #e5a717;
         }
 
-        /* Animation */
         @keyframes fadeIn {
             from {
                 opacity: 0;
@@ -124,26 +120,30 @@
     </script>
 </head>
 <body>
-    <audio autoplay loop>
+    <audio id="background-audio" muted autoplay loop>
         <source src="{% static 'audio/music.mp3' %}" type="audio/mpeg">
         Your browser does not support the audio element.
     </audio>
-
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            const audio = document.getElementById('background-audio');
+            audio.muted = false; // Снять мьют, чтобы музыка заиграла
+        });
+    </script>
     <div class="container">
-        <h1>Upload Your CSV File</h1>
-        <!-- Display error message if it exists -->
+        <h1>Upload and Process CSV File</h1>
         {% if error_message %}
         <p class="error">{{ error_message }}</p>
         {% endif %}
-        <form method="post" enctype="multipart/form-data" oninput="clearErrorMessage()">
+        <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
-            <!-- File input block -->
             <div class="file-input-container">
                 <label for="file">Choose File</label>
                 <span id="file-name">No file chosen</span>
                 <input type="file" id="file" name="file" onchange="updateFileName(this)" required>
             </div>
-            <button type="submit">Upload and Process</button>
+            <button type="submit" name="action" value="file1">Export File 1</button>
+            <button type="submit" name="action" value="file2">Export File 2</button>
         </form>
     </div>
 </body>

@@ -3,6 +3,8 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.core.files.uploadedfile import UploadedFile
 import pandas as pd
+import zipfile
+from io import BytesIO
 
 
 def process_file(file: UploadedFile):
@@ -49,34 +51,33 @@ def file_view(request):
 
     if request.method == "POST":
         file = request.FILES.get('file')
+        action = request.POST.get('action')  # Получаем действие (file1 или file2)
 
-        # Проверка на наличие загруженного файла
         if not file:
             error_message = "Файл не был загружен. Пожалуйста, загрузите файл."
         elif not file.name.endswith('.csv'):
             error_message = "Недопустимый формат файла. Загрузите файл в формате CSV."
         else:
             try:
-                # Обработка CSV-файла
                 processed_files = process_file(file)
 
-                # Создаем zip-архив с обоими файлами
-                import zipfile
-                from io import BytesIO
+                # В зависимости от действия возвращаем нужный файл
+                if action == "file1":
+                    response = HttpResponse(
+                        processed_files["file1"],
+                        content_type='text/csv',
+                    )
+                    response['Content-Disposition'] = f'attachment; filename="processed_{file.name}"'
+                    return response
+                elif action == "file2":
+                    response = HttpResponse(
+                        processed_files["file2"],
+                        content_type='text/csv',
+                    )
+                    response['Content-Disposition'] = f'attachment; filename="daily_avg_{file.name}"'
+                    return response
 
-                zip_buffer = BytesIO()
-                with zipfile.ZipFile(zip_buffer, 'w') as zf:
-                    zf.writestr(f'modified_{file.name}', processed_files['file1'].getvalue())
-                    zf.writestr(f'daily_avg_{file.name}', processed_files['file2'].getvalue())
-
-                zip_buffer.seek(0)
-
-                # Ответ с zip-архивом
-                response = HttpResponse(zip_buffer, content_type='application/zip')
-                response['Content-Disposition'] = 'attachment; filename="processed_files.zip"'
-                return response
             except Exception as e:
                 error_message = f"Произошла ошибка при обработке файла: {str(e)}"
 
-    # Отображение формы с сообщением об ошибке, если требуется
     return render(request, 'upload.html', {'error_message': error_message})
