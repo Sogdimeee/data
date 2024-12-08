@@ -28,8 +28,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
-DATA_UPLOAD_MAX_MEMORY_SIZE = None  # Снимает ограничение на объем данных запроса
-FILE_UPLOAD_MAX_MEMORY_SIZE = None
 
 # Application definition
 
@@ -70,26 +68,6 @@ TEMPLATES = [
         },
     },
 ]
-
-FILE_UPLOAD_HANDLERS = [
-    'django.core.files.uploadhandler.TemporaryFileUploadHandler',
-]
-
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-        },
-    },
-    'root': {
-        'handlers': ['console'],
-        'level': 'DEBUG',
-    },
-}
-
-FILE_UPLOAD_TEMP_DIR = '/var/www/data/tmp'
 
 WSGI_APPLICATION = "djangoProject.wsgi.application"
 
