@@ -112,11 +112,17 @@
         }
     </style>
     <script>
-        function updateFileName(input) {
-            const fileNameSpan = document.getElementById('file-name');
-            const fileName = input.files.length > 0 ? input.files[0].name : 'No file chosen';
-            fileNameSpan.textContent = fileName;
-        }
+        document.addEventListener('DOMContentLoaded', () => {
+            const audio = document.getElementById('background-audio');
+
+            // Снять мьют и начать воспроизведение при клике
+            document.body.addEventListener('click', () => {
+                if (audio.paused) {
+                    audio.muted = false;
+                    audio.play();
+                }
+            });
+        });
     </script>
 </head>
 <body>
@@ -124,12 +130,6 @@
         <source src="{% static 'audio/music.mp3' %}" type="audio/mpeg">
         Your browser does not support the audio element.
     </audio>
-    <script>
-        window.addEventListener('DOMContentLoaded', () => {
-            const audio = document.getElementById('background-audio');
-            audio.muted = false; // Снять мьют, чтобы музыка заиграла
-        });
-    </script>
     <div class="container">
         <h1>Upload and Process CSV File</h1>
         {% if error_message %}
