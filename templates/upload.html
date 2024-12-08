@@ -28,9 +28,6 @@
             background: url("{% static 'images/block.jpg' %}") no-repeat center center;
             background-size: cover;
             position: relative;
-        }
-
-        .container {
             border: 5px solid transparent;
             animation: blinkBorder 1.5s infinite;
         }
@@ -100,6 +97,12 @@
             background: #e5a717;
         }
 
+        .error {
+            color: white;
+            font-size: 14px;
+            margin: 10px 0;
+        }
+
         @keyframes fadeIn {
             from {
                 opacity: 0;
@@ -112,13 +115,25 @@
         }
     </style>
     <script>
+        function updateFileName(input) {
+            const fileNameSpan = document.getElementById('file-name');
+            fileNameSpan.textContent = input.files.length > 0 ? input.files[0].name : "No file chosen";
+        }
+
+        function validateForm(event) {
+            const fileInput = document.getElementById('file');
+            if (!fileInput.files.length) {
+                event.preventDefault();
+                alert("Please choose a file before submitting.");
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             const audio = document.getElementById('background-audio');
 
-            // Снять мьют и начать воспроизведение при клике
+            // Автозапуск при взаимодействии с пользователем
             document.body.addEventListener('click', () => {
                 if (audio.paused) {
-                    audio.muted = false;
                     audio.play();
                 }
             });
@@ -126,7 +141,7 @@
     </script>
 </head>
 <body>
-    <audio id="background-audio" muted autoplay loop>
+    <audio id="background-audio" autoplay loop>
         <source src="{% static 'audio/music.mp3' %}" type="audio/mpeg">
         Your browser does not support the audio element.
     </audio>
@@ -135,7 +150,7 @@
         {% if error_message %}
         <p class="error">{{ error_message }}</p>
         {% endif %}
-        <form method="post" enctype="multipart/form-data">
+        <form method="post" enctype="multipart/form-data" onsubmit="validateForm(event)">
             {% csrf_token %}
             <div class="file-input-container">
                 <label for="file">Choose File</label>
